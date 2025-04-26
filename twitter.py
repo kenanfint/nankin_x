@@ -23,7 +23,7 @@ def authenticate():
 
         return client, api
 
-def send_tweet(text='Doggy', alt=''):
+def sendTweet(text='', alt=''):
         try:
                 (client, api) = authenticate()
                 
@@ -39,13 +39,13 @@ def send_tweet(text='Doggy', alt=''):
 
                 tweet = client.create_tweet(text=text, user_auth=True, media_ids=media_ids)
                 
-                client.create_tweet(
-                        text='reply', user_auth=True, media_ids=media_ids, in_reply_to_tweet_id=tweet.data["id"]
-                )
+                #
+                # REPLY
+                # client.create_tweet(
+                        #text='reply', user_auth=True, media_ids=media_ids, in_reply_to_tweet_id=tweet.data["id"]
+                #)
                 
                 print('done')
         except Exception as e:
                 print(e)
         return None
-
-print(send_tweet())

@@ -3,7 +3,6 @@ import asyncio
 import tweepy
 import config
 
-
 def authenticate():
     client = tweepy.Client(
         bearer_token=config.X_BEARER_TOKEN,
@@ -24,7 +23,7 @@ def authenticate():
     return client, api
 
 
-async def send_tweet(text: str = '', alt: str = '') -> None:
+async def send_tweet(text: str = '', alt: str = '', reply_tweet_id: str | None = None) -> None:
     try:
         client, api = authenticate()
 
@@ -41,34 +40,10 @@ async def send_tweet(text: str = '', alt: str = '') -> None:
             client.create_tweet,
             text=text,
             user_auth=True,
-            media_ids=media_ids
-        )
-
-        print(tweet.data["id"])
-    except Exception as e:
-        print(f"Erro ao enviar tweet: {e}")
-
-async def send_reply(text: str = '', alt: str = '', tweet_id = None) -> None:
-    try:
-        client, api = authenticate()
-
-        img_name = "1.jpg"
-        image_path = os.path.join(os.path.dirname(__file__), "..", "assets", "images", img_name)
-
-        resp = await asyncio.to_thread(api.media_upload, image_path)
-
-        await asyncio.to_thread(api.create_media_metadata, resp.media_id, alt_text=alt)
-
-        media_ids = [resp.media_id]
-
-        tweet = await asyncio.to_thread(
-            client.create_tweet,
-            text='reply', 
-            user_auth=True,
             media_ids=media_ids,
-            in_reply_to_tweet_id=tweet_id
+            in_reply_to_tweet_id=reply_tweet_id
         )
 
-        print(tweet.data["id"])
+        return tweet.data
     except Exception as e:
         print(f"Erro ao enviar tweet: {e}")

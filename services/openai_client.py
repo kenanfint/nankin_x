@@ -1,6 +1,7 @@
 from openai import OpenAI
 import config
 import asyncio
+from DTO.twitter import Thread
 
 client = OpenAI(
     api_key=config.OPEN_AI_API_KEY,
@@ -8,9 +9,10 @@ client = OpenAI(
 
 async def get_openai_response(prompt: str) -> str:
     response = await asyncio.to_thread(
-        client.responses.create,
+        client.responses.parse,
         model="gpt-4.1",
-        input=prompt
+        input=prompt,
+        text_format=Thread,
     )
     return response.output_text
 

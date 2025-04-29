@@ -31,28 +31,44 @@ async def send_tweet(text: str = '', alt: str = '') -> None:
         img_name = "1.jpg"
         image_path = os.path.join(os.path.dirname(__file__), "..", "assets", "images", img_name)
 
-        # Upload da imagem em thread separada
         resp = await asyncio.to_thread(api.media_upload, image_path)
 
-        # Definir metadata da imagem (acessibilidade)
         await asyncio.to_thread(api.create_media_metadata, resp.media_id, alt_text=alt)
 
         media_ids = [resp.media_id]
 
-        # Criar o tweet
-        await asyncio.to_thread(
+        tweet = await asyncio.to_thread(
             client.create_tweet,
             text=text,
             user_auth=True,
             media_ids=media_ids
         )
-    
-        # REPLY
-        # client.create_tweet(
-        # text='reply', user_auth=True, media_ids=media_ids, in_reply_to_tweet_id=tweet.data["id"]
-        #)
 
-        print('Tweet enviado com sucesso.')
+        print(tweet.data["id"])
+    except Exception as e:
+        print(f"Erro ao enviar tweet: {e}")
 
+async def send_reply(text: str = '', alt: str = '', tweet_id = None) -> None:
+    try:
+        client, api = authenticate()
+
+        img_name = "1.jpg"
+        image_path = os.path.join(os.path.dirname(__file__), "..", "assets", "images", img_name)
+
+        resp = await asyncio.to_thread(api.media_upload, image_path)
+
+        await asyncio.to_thread(api.create_media_metadata, resp.media_id, alt_text=alt)
+
+        media_ids = [resp.media_id]
+
+        tweet = await asyncio.to_thread(
+            client.create_tweet,
+            text='reply', 
+            user_auth=True,
+            media_ids=media_ids,
+            in_reply_to_tweet_id=tweet_id
+        )
+
+        print(tweet.data["id"])
     except Exception as e:
         print(f"Erro ao enviar tweet: {e}")
